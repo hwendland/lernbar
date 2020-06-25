@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <draggable class="row" :list="chapter.content">
         <div class="col-xl-3 col-md-4 col-sm-6 col-xs-12 mb-4" v-for="(content, index) in chapter.content" :key="content.title">
           <div class="card" @mouseenter="showDelete(index, $event)" @mouseleave="hideDelete(index, $event)">
             <img class="card-img-top" :src="content.previewImage" alt="preview"
@@ -37,14 +37,16 @@
             </div>
           </div>
         </div>
-      </div>
+      </draggable>
     </div>
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 
 export default {
   name: 'CourseChapter',
+  components: { draggable },
   props: ['chapterIndex'],
   computed: {
     chapter () {

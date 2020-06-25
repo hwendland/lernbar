@@ -11,13 +11,14 @@
     </div>
   </div>
   <div style="overflow: auto">
-    <ul class="list-group-flush pt-5 pl-0">
-      <li class="list-group-item" @click="select({chapter: -1, content: -1})"
+    <div class="list-group-flush pt-5 pl-0 course-title">
+      <div id="title" class="list-group-item" @click="select({chapter: -1, content: -1})"
           :class="titleClass">
         <span class="material-icons pr-2">school</span>
         <span class="cursor">{{course.title}}</span>
-      </li>
-      <li class="list-group-item"
+      </div>
+      <draggable :list="course.courseStructure.chapters">
+      <div class="list-group-item"
           v-for="(chapter, index) in course.courseStructure.chapters" :key="chapter.title">
         <div class="row" @mouseenter="showDelete(index, -1, $event)" @mouseleave="hideDelete(index, -1, $event)">
           <div class="col pr-0 mr-0" @click="select({chapter: index, content: -1})"
@@ -34,8 +35,9 @@
                   @click="invertExpansion(index)">expand_less</span>
           </div>
         </div>
-        <ul class="list-group sublist py-2" v-if="isChapterExpanded[index]">
-          <li v-for="(content, i) in chapter.content" :key="content.title">
+        <draggable class="list-group sublist py-2" v-if="isChapterExpanded[index]"
+                   :list="chapter.content" group="chapterContent">
+          <div v-for="(content, i) in chapter.content" :key="content.id">
             <div class="row" @mouseenter="showDelete(index, i, $event)" @mouseleave="hideDelete(index, i, $event)">
               <div class="col pr-0 mr-0" @click="select({chapter: index, content: i})" :class="isSelected(index, i)">
                 <span v-if="content.contentType==='section'" class="material-icons pr-2">description</span>
@@ -47,10 +49,10 @@
                       @click="deleteContent(index, i)">delete</span>
               </div>
             </div>
-          </li>
-        </ul>
-      </li>
-    </ul>
+          </div>
+        </draggable>
+      </div>
+    </draggable>
   </div>
   <button v-if="buttonExpanded" @click="newChapter"
           class="btn btn-light btn-sm btn-small-circle" style="bottom: 200px">
@@ -69,7 +71,7 @@
     <span v-else class="material-icons nav-button">close</span>
   </button>
 </div>
-
+</div>
 <div v-else class="h-100 pr-0 bg-light shadow text-secondary" style="width: 70px">
   <div class="row p-2">
     <div class="col d-flex justify-content-end">
@@ -80,8 +82,11 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
   name: 'SideNav',
+  components: { draggable },
   data () {
     return {
       isMinimized: false,
@@ -164,16 +169,18 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .nav-button {
     font-size: xx-large;
   }
   .list-group-item {
     background-color: #f8f9fa!important;
-    /*border-bottom: 1px solid white!important;*/
-    /*border-top: 1px solid white;*/
     font-size: smaller;
     padding-left: 10px
+  }
+  .list-group-flush:first-child .list-group-item:first-child {
+    border-top: 1px solid rgba(0, 0, 0, .125);
+    z-index: 19;
   }
   .cursor {
     cursor: pointer;
@@ -220,5 +227,8 @@ export default {
     font-size: medium;
     transform: translate(0px, 10px);
     display: none;
+  }
+  #title {
+    border-top: 0
   }
 </style>

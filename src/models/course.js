@@ -1,14 +1,37 @@
 import { Type } from 'class-transformer'
+import { Widget } from './widget'
 
 export class Content {
   contentType
   title
+  id
   previewImage = '/img/placeholder.jpg'
+  @Type(() => Widget)
+  widgets = []
+
+  runningWidgetId = 0
+
+  constructor (id) {
+    this.id = id
+    if (this.widgets.length) {
+      const maxId = Math.max(this.widgets.map(widget => widget.id))
+      this.runningWidgetId = maxId + 1
+    }
+  }
+
+  addWidget (widgetType) {
+    this.widgets.push(new Widget(widgetType, this.runningWidgetId))
+    this.runningWidgetId++
+  }
+
+  deleteWidget (index) {
+    this.widgets.splice(index, 1)
+  }
 }
 
 export class Section extends Content {
-  constructor (n = 1) {
-    super()
+  constructor (n = 1, id) {
+    super(id)
     this.title = 'Section ' + n
   }
 
@@ -16,8 +39,8 @@ export class Section extends Content {
 }
 
 export class Task extends Content {
-  constructor (n = 1) {
-    super()
+  constructor (n = 1, id) {
+    super(id)
     this.title = 'Task ' + n
   }
 
@@ -34,22 +57,35 @@ export class Chapter {
       ]
     }
   })
-  content = [new Section(), new Task()]
+  content = []
 
-  sectionCount = 1
-  taskCount = 1
-  constructor (n = 1) {
+  id
+  sectionCount = 0
+  taskCount = 0
+
+  constructor (n, id) {
     this.title = 'Chapter ' + n
+    this.id = id
+    this.runningContentId = this.id * 10000000
+    if (this.content.length) {
+      const maxId = Math.max(this.content.map(content => content.id))
+      this.runningContentId *= (maxId + 1)
+    } else {
+      this.addSection()
+      this.addTask()
+    }
   }
 
-  addSection (n = this.sectionCount + 1) {
-    this.content.push(new Section(n))
+  addSection (n = this.sectionCount + 1, id = this.runningContentId) {
+    this.content.push(new Section(n, id))
     this.sectionCount++
+    this.runningContentId++
   }
 
-  addTask (n = this.taskCount + 1) {
-    this.content.push(new Task(n))
+  addTask (n = this.taskCount + 1, id = this.runningContentId) {
+    this.content.push(new Task(n, id))
     this.taskCount++
+    this.runningContentId++
   }
 
   deleteContent (index) {
@@ -59,11 +95,23 @@ export class Chapter {
 }
 
 export class CourseStructure {
-  @Type(() => Chapter)
-  chapters = [new Chapter()]
+  constructor () {
+    if (this.chapters.length) {
+      const maxId = Math.max(this.chapters.map(chapter => chapter.id))
+      this.runningChapterId = maxId + 1
+    } else {
+      this.addChapter()
+    }
+  }
 
-  addChapter (n) {
-    this.chapters.push(new Chapter(n))
+  runningChapterId = 0
+
+  @Type(() => Chapter)
+  chapters = []
+
+  addChapter (n = 1, id = this.runningChapterId) {
+    this.chapters.push(new Chapter(n, id))
+    this.runningChapterId++
   }
 
   deleteChapter (i) {

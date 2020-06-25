@@ -31,6 +31,15 @@ export const EditorStore = {
     },
     select (state, newSelection) {
       state.selected = newSelection
+    },
+    reorderWidgets (state, { chapterIndex, contentIndex, reorderedList }) {
+      state.course.getContent(chapterIndex, contentIndex).widgets = reorderedList
+    },
+    addWidget (state, { chapterIndex, contentIndex, widgetType }) {
+      state.course.getContent(chapterIndex, contentIndex).addWidget(widgetType)
+    },
+    deleteWidget (state, { chapterIndex, contentIndex, widgetIndex }) {
+      state.course.getContent(chapterIndex, contentIndex).deleteWidget(widgetIndex)
     }
   },
   actions: {
