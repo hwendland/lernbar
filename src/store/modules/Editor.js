@@ -14,32 +14,29 @@ export const EditorStore = {
       state.course = courseData
     },
     newChapter (state) {
-      const runningId = state.course.courseStructure.chapters.length + 1
-      state.course.courseStructure.addChapter(runningId)
+      state.course.courseStructure.addChapter()
     },
-    deleteChapter (state, chapterIndex) {
-      state.course.courseStructure.deleteChapter(chapterIndex)
+    deleteChapter (state, chapterId) {
+      state.course.courseStructure.deleteChapter(chapterId)
     },
-    newSection (state, chapterIndex) {
-      state.course.courseStructure.chapters[chapterIndex].addSection()
+    newContent (state, { chapterId, contentType }) {
+      if (contentType === 'section') {
+        state.course.courseStructure.getChapter(chapterId).addSection()
+      } else {
+        state.course.courseStructure.getChapter(chapterId).addTask()
+      }
     },
-    newTask (state, chapterIndex) {
-      state.course.courseStructure.chapters[chapterIndex].addTask()
-    },
-    deleteContent (state, { chapterIndex, contentIndex }) {
-      state.course.courseStructure.chapters[chapterIndex].deleteContent(contentIndex)
+    deleteContent (state, { chapterId, contentId }) {
+      state.course.courseStructure.getChapter(chapterId).deleteContent(contentId)
     },
     select (state, newSelection) {
       state.selected = newSelection
     },
-    reorderWidgets (state, { chapterIndex, contentIndex, reorderedList }) {
-      state.course.getContent(chapterIndex, contentIndex).widgets = reorderedList
+    addWidget (state, { chapterId, contentId, widgetType }) {
+      state.course.getContent(chapterId, contentId).addWidget(widgetType)
     },
-    addWidget (state, { chapterIndex, contentIndex, widgetType }) {
-      state.course.getContent(chapterIndex, contentIndex).addWidget(widgetType)
-    },
-    deleteWidget (state, { chapterIndex, contentIndex, widgetIndex }) {
-      state.course.getContent(chapterIndex, contentIndex).deleteWidget(widgetIndex)
+    deleteWidget (state, { chapterId, contentId, widgetId }) {
+      state.course.getContent(chapterId, contentId).deleteWidget(widgetId)
     }
   },
   actions: {
@@ -71,6 +68,21 @@ export const EditorStore = {
           .then(res => resolve(res))
           .catch(err => reject(err))
       })
+    },
+    newChapter: ({ state, commit }) => {
+      return new Promise(resolve => {
+        commit('newChapter')
+        const newChapterId = state.course.courseStructure.getLastChapter()
+        resolve(newChapterId)
+      })
+    },
+    newContent ({ state, commit }, contentType) {
+      if (state.selected.chapter !== -1) {
+        commit('newContent', { chapterId: state.selected.chapter, contentType })
+      } else {
+        const lastChapterId = state.course.getLastChapter().id
+        commit('newContent', { chapterId: lastChapterId, contentType })
+      }
     }
   }
 }

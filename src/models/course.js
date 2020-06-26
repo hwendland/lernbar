@@ -24,24 +24,25 @@ export class Content {
     this.runningWidgetId++
   }
 
-  deleteWidget (index) {
+  deleteWidget (id) {
+    const index = this.widgets.findIndex(w => w.id === id)
     this.widgets.splice(index, 1)
   }
 }
 
 export class Section extends Content {
-  constructor (n = 1, id) {
+  constructor (id) {
     super(id)
-    this.title = 'Section ' + n
+    this.title = 'new Section'
   }
 
   contentType = 'section'
 }
 
 export class Task extends Content {
-  constructor (n = 1, id) {
+  constructor (id) {
     super(id)
-    this.title = 'Task ' + n
+    this.title = 'new Task'
   }
 
   contentType = 'task'
@@ -63,8 +64,8 @@ export class Chapter {
   sectionCount = 0
   taskCount = 0
 
-  constructor (n, id) {
-    this.title = 'Chapter ' + n
+  constructor (id) {
+    this.title = 'new Chapter'
     this.id = id
     this.runningContentId = this.id * 10000000
     if (this.content.length) {
@@ -76,19 +77,24 @@ export class Chapter {
     }
   }
 
-  addSection (n = this.sectionCount + 1, id = this.runningContentId) {
-    this.content.push(new Section(n, id))
+  getContent (id) {
+    return this.content.find(el => el.id === id)
+  }
+
+  addSection (id = this.runningContentId) {
+    this.content.push(new Section(id))
     this.sectionCount++
     this.runningContentId++
   }
 
-  addTask (n = this.taskCount + 1, id = this.runningContentId) {
-    this.content.push(new Task(n, id))
+  addTask (id = this.runningContentId) {
+    this.content.push(new Task(id))
     this.taskCount++
     this.runningContentId++
   }
 
-  deleteContent (index) {
+  deleteContent (id) {
+    const index = this.content.findIndex(el => el.id === id)
     const deletion = this.content.splice(index, 1)
     deletion.contentType === 'task' ? this.taskCount-- : this.sectionCount--
   }
@@ -109,13 +115,22 @@ export class CourseStructure {
   @Type(() => Chapter)
   chapters = []
 
-  addChapter (n = 1, id = this.runningChapterId) {
-    this.chapters.push(new Chapter(n, id))
+  addChapter (id = this.runningChapterId) {
+    this.chapters.push(new Chapter(id))
     this.runningChapterId++
   }
 
-  deleteChapter (i) {
-    this.chapters.splice(i, 1)
+  deleteChapter (id) {
+    const index = this.chapters.findIndex(chapter => chapter.id === id)
+    this.chapters.splice(index, 1)
+  }
+
+  getChapter (id) {
+    return this.chapters.find(chapter => chapter.id === id)
+  }
+
+  getLastChapter () {
+    return this.chapters[this.chapters.length - 1]
   }
 }
 
@@ -140,12 +155,26 @@ export class Course {
     this.id = id
   }
 
-  getChapter (index) {
-    return this.courseStructure.chapters[index]
+  getChapter (id) {
+    return this.courseStructure.getChapter(id)
   }
 
-  getContent (chapterIndex, contentIndex) {
-    return this.courseStructure.chapters[chapterIndex].content[contentIndex]
+  getLastChapter () {
+    return this.courseStructure.getLastChapter()
+  }
+
+  getContent (chapterId, contentId) {
+    let result
+    try {
+      result = this.getChapter(chapterId).getContent(contentId)
+    } finally {
+      const allContent = []
+      this.courseStructure.chapters.forEach(
+        chapter => allContent.push(...chapter.content)
+      )
+      result = allContent.find(el => el.id === contentId)
+    }
+    return result
   }
 
   chapterCount () { return this.courseStructure.chapters.length }

@@ -19,34 +19,36 @@
       </div>
       <draggable :list="course.courseStructure.chapters">
       <div class="list-group-item"
-          v-for="(chapter, index) in course.courseStructure.chapters" :key="chapter.title">
-        <div class="row" @mouseenter="showDelete(index, -1, $event)" @mouseleave="hideDelete(index, -1, $event)">
-          <div class="col pr-0 mr-0" @click="select({chapter: index, content: -1})"
-               :class="isSelected(index)">
+          v-for="chapter in course.courseStructure.chapters" :key="chapter.id">
+        <div class="row" @mouseenter="showDelete(chapter.id, -1, $event)" @mouseleave="hideDelete(chapter.id, -1, $event)">
+          <div class="col pr-0 mr-0" @click="select({chapter: chapter.id, content: -1})"
+               :class="isSelected(chapter.id)">
             <span class="material-icons pr-2">book</span>
             <span class="cursor">{{chapter.title}}</span>
           </div>
           <div class="col p-0 m-0 justify-content-end d-flex flex-row" style="flex-grow: 0">
-            <span class="material-icons pr-2 delete" :id="'delete' + '_' + index"
-                  @click="deleteChapter(index)">delete</span>
-            <span class="material-icons pr-2" @click="invertExpansion(index)"
-                  v-if="!isChapterExpanded[index]">expand_more</span>
+            <span class="material-icons pr-2 delete" :id="'delete' + '_' + chapter.id"
+                  @click="deleteChapter(chapter.id)">delete</span>
+            <span class="material-icons pr-2" @click="invertExpansion(chapter.id)"
+                  v-if="!isChapterExpanded[chapter.id]">expand_more</span>
             <span class="material-icons pr-2" v-else
-                  @click="invertExpansion(index)">expand_less</span>
+                  @click="invertExpansion(chapter.id)">expand_less</span>
           </div>
         </div>
-        <draggable class="list-group sublist py-2" v-if="isChapterExpanded[index]"
+        <draggable class="list-group sublist py-2" v-if="isChapterExpanded[chapter.id]"
                    :list="chapter.content" group="chapterContent">
-          <div v-for="(content, i) in chapter.content" :key="content.id">
-            <div class="row" @mouseenter="showDelete(index, i, $event)" @mouseleave="hideDelete(index, i, $event)">
-              <div class="col pr-0 mr-0" @click="select({chapter: index, content: i})" :class="isSelected(index, i)">
+          <div v-for="content in chapter.content" :key="content.id">
+            <div class="row" @mouseenter="showDelete(chapter.id, content.id, $event)"
+                 @mouseleave="hideDelete(chapter.id, content.id, $event)">
+              <div class="col pr-0 mr-0" @click="select({chapter: chapter.id, content: content.id})"
+                   :class="isSelected(chapter.id, content.id)">
                 <span v-if="content.contentType==='section'" class="material-icons pr-2">description</span>
                 <span v-else class="material-icons pr-2">create</span>
                 <span class="cursor">{{content.title}}</span>
               </div>
               <div class="col p-0 m-0 justify-content-end d-flex flex-row" style="flex-grow: 0">
-                <span class="material-icons pr-2 delete" :id="'delete' + '_' + index + '_' + i"
-                      @click="deleteContent(index, i)">delete</span>
+                <span class="material-icons pr-2 delete" :id="'delete' + '_' + chapter.id + '_' + content.id"
+                      @click="deleteContent(chapter.id, content.id)">delete</span>
               </div>
             </div>
           </div>
@@ -58,11 +60,11 @@
           class="btn btn-light btn-sm btn-small-circle" style="bottom: 200px">
     <span class="material-icons">book</span>
   </button>
-  <button v-if="buttonExpanded" @click="newSection"
+  <button v-if="buttonExpanded" @click="newContent('section')"
           class="btn btn-light btn-sm btn-small-circle" style="bottom: 140px">
     <span class="material-icons">description</span>
   </button>
-  <button v-if="buttonExpanded" @click="newTask"
+  <button v-if="buttonExpanded" @click="newContent('task')"
           class="btn btn-light btn-sm btn-small-circle" style="bottom: 80px">
     <span class="material-icons">create</span>
   </button>
@@ -91,7 +93,7 @@ export default {
     return {
       isMinimized: false,
       buttonExpanded: false,
-      isChapterExpanded: []
+      isChapterExpanded: {}
     }
   },
   computed: {
@@ -107,64 +109,56 @@ export default {
       // persist
     },
     newChapter () {
-      this.$store.commit('newChapter')
-      this.isChapterExpanded.push(true)
+      this.$store.dispatch('newChapter').then(newChapterId => {
+        this.$set(this.isChapterExpanded, newChapterId, true)
+      })
     },
-    newSection () {
-      if (this.selected.chapter !== -1) {
-        this.$store.commit('newSection', this.selected.chapter)
-      } else {
-        this.$store.commit('newSection', this.course.chapterCount() - 1)
-      }
-    },
-    newTask () {
-      if (this.selected.chapter !== -1) {
-        this.$store.commit('newTask', this.selected.chapter)
-      } else {
-        this.$store.commit('newTask', this.course.chapterCount() - 1)
-      }
+    newContent (contentType) {
+      this.$store.dispatch('newContent', contentType)
     },
     select (newSelection) {
       this.$store.commit('select', newSelection)
     },
-    invertExpansion (chapterIndex) {
-      this.isChapterExpanded.splice(chapterIndex, 1, !this.isChapterExpanded[chapterIndex])
+    invertExpansion (chapterId) {
+      this.isChapterExpanded[chapterId] = !this.isChapterExpanded[chapterId]
     },
-    isSelected (chapterIndex, contentIndex = -1) {
-      if (contentIndex >= 0) {
-        return { selected: this.selected.chapter === chapterIndex && this.selected.content === contentIndex }
+    isSelected (chapterId, contentId = -1) {
+      if (contentId >= 0) {
+        return { selected: this.selected.content === contentId }
       }
-      return { selected: this.selected.chapter === chapterIndex && this.selected.content === -1 }
+      return { selected: this.selected.chapter === chapterId && this.selected.content === -1 }
     },
-    showDelete (chapterIndex, contentIndex = -1, event) {
-      let id = 'delete' + '_' + chapterIndex
-      if (contentIndex !== -1) {
-        id = id + '_' + contentIndex
+    showDelete (chapterId, contentId = -1, event) {
+      let id = 'delete' + '_' + chapterId
+      if (contentId !== -1) {
+        id = id + '_' + contentId
       }
       document.getElementById(id).style.display = 'inline-block'
     },
-    hideDelete (chapterIndex, contentIndex = -1, event) {
-      let id = 'delete' + '_' + chapterIndex
-      if (contentIndex !== -1) {
-        id = id + '_' + contentIndex
+    hideDelete (chapterId, contentId = -1, event) {
+      let id = 'delete' + '_' + chapterId
+      if (contentId !== -1) {
+        id = id + '_' + contentId
       }
       document.getElementById(id).style.display = 'none'
     },
-    deleteChapter (chapterIndex) {
-      if (this.isSelected(chapterIndex)) {
-        this.select({ chapter: chapterIndex - 1, content: -1 })
+    deleteChapter (chapterId) {
+      if (this.isSelected(chapterId)) {
+        this.select({ chapter: -1, content: -1 })
       }
-      this.$store.commit('deleteChapter', chapterIndex)
+      this.$store.commit('deleteChapter', chapterId)
     },
-    deleteContent (chapterIndex, contentIndex) {
-      if (this.isSelected(chapterIndex, contentIndex)) {
-        this.select({ chapter: chapterIndex, content: contentIndex - 1 })
+    deleteContent (chapterId, contentId) {
+      if (this.isSelected(chapterId, contentId)) {
+        this.select({ chapter: chapterId, content: -1 })
       }
-      this.$store.commit('deleteContent', { chapterIndex, contentIndex })
+      this.$store.commit('deleteContent', { chapterId, contentId })
     }
   },
   created () {
-    this.isChapterExpanded = this.course.courseStructure.chapters.map(() => true)
+    this.course.courseStructure.chapters.forEach((chapter) => {
+      this.$set(this.isChapterExpanded, chapter.id, true)
+    })
   }
 }
 </script>

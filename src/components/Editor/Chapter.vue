@@ -19,19 +19,19 @@
         </div>
       </div>
       <draggable class="row" :list="chapter.content">
-        <div class="col-xl-3 col-md-4 col-sm-6 col-xs-12 mb-4" v-for="(content, index) in chapter.content" :key="content.title">
-          <div class="card" @mouseenter="showDelete(index, $event)" @mouseleave="hideDelete(index, $event)">
+        <div class="col-xl-3 col-md-4 col-sm-6 col-xs-12 mb-4" v-for="(content) in chapter.content" :key="content.id">
+          <div class="card" @mouseenter="showDelete(content.id, $event)" @mouseleave="hideDelete(content.id, $event)">
             <img class="card-img-top" :src="content.previewImage" alt="preview"
-                 @click="$store.commit('select', {chapter: chapterIndex, content: index})">
+                 @click="$store.commit('select', {chapter: chapter.id, content: content.id})">
             <div class="card-footer bg-white pb-0">
               <div class="row">
                 <div class="col d-flex justify-content-start"
-                     @click="$store.commit('select', {chapter: chapterIndex, content: index})">
+                     @click="$store.commit('select', {chapter: chapter.id, content: content.id})">
                   <h5 class="card-title">{{content.title}}</h5>
                 </div>
                 <div class="col justify-content-end d-flex text-secondary m-0 p-0" style="flex-grow: 0">
-                  <span :id="'delete' + index" class="material-icons pr-2 delete" style="display: none"
-                        @click="deleteContent(index)">delete</span>
+                  <span :id="'delete_' + content.id" class="material-icons pr-2 delete" style="display: none"
+                        @click="deleteContent(content.id)">delete</span>
                 </div>
               </div>
             </div>
@@ -47,21 +47,21 @@ import draggable from 'vuedraggable'
 export default {
   name: 'CourseChapter',
   components: { draggable },
-  props: ['chapterIndex'],
+  props: ['chapterId'],
   computed: {
     chapter () {
-      return this.$store.state.editor.course.getChapter(this.chapterIndex)
+      return this.$store.state.editor.course.getChapter(this.chapterId)
     }
   },
   methods: {
-    showDelete (index, event) {
-      document.getElementById('delete' + index).style.display = 'inline-block'
+    showDelete (id, event) {
+      document.getElementById('delete' + '_' + id).style.display = 'inline-block'
     },
-    hideDelete (index, event) {
-      document.getElementById('delete' + index).style.display = 'none'
+    hideDelete (id, event) {
+      document.getElementById('delete' + '_' + id).style.display = 'none'
     },
-    deleteContent (index) {
-      this.$store.commit('deleteContent', { chapterIndex: this.chapterIndex, contentIndex: index })
+    deleteContent (id) {
+      this.$store.commit('deleteContent', { chapterId: this.chapterId, contentId: id })
     }
   }
 }

@@ -6,10 +6,10 @@
 
 export default {
   name: 'CourseTask',
-  props: ['chapterIndex', 'contentIndex'],
+  props: ['chapterId', 'contentId'],
   computed: {
     task () {
-      return this.$store.state.editor.course.getContent(this.chapterIndex, this.contentIndex)
+      return this.$store.state.editor.course.getContent(this.chapterId, this.contentId)
     }
   }
 }

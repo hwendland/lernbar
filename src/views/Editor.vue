@@ -6,8 +6,8 @@
           <top-nav></top-nav>
         </div>
         <div class="row px-5 pt-5 h-100 d-flex flex-column" style="overflow-y: auto">
-          <component :is="currentComponent" :chapterIndex="selected.chapter"
-                     :contentIndex="selected.content"></component>
+          <component :is="currentComponent" :chapterId="selected.chapter"
+                     :contentId="selected.content"></component>
         </div>
       </div>
     </div>

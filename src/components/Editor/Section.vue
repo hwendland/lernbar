@@ -8,9 +8,9 @@
       <span class="material-icons">music_note</span>
     </div>
     <draggable :list="widgets" class="row">
-      <component @delete="deleteWidget(index)" v-model=widget.content
+      <component @delete="deleteWidget(widget.id)" v-model=widget.content
                  :size="widget.columns" @updateSize="widget.columns=$event"
-                 :is="widget.type" v-for="(widget, index) in widgets" :key="widget.id"></component>
+                 :is="widget.type" v-for="(widget) in widgets" :key="widget.id"></component>
     </draggable>
   </div>
 </template>
@@ -23,35 +23,26 @@ import IframeWidget from './Widgets/IFrame'
 export default {
   name: 'CourseSection',
   components: { TextWidget, IframeWidget, draggable },
-  props: ['chapterIndex', 'contentIndex'],
+  props: ['chapterId', 'contentId'],
   computed: {
     section () {
-      return this.$store.state.editor.course.getContent(this.chapterIndex, this.contentIndex)
+      return this.$store.state.editor.course.getContent(this.chapterId, this.contentId)
     },
-    widgets: {
-      get () { return this.section.widgets },
-      set (value) {
-        this.$store.commit('reorderWidgets', {
-          chapterIndex: this.chapterIndex,
-          contentIndex: this.contentIndex,
-          widgets: value
-        })
-      }
-    }
+    widgets () { return this.section.widgets }
   },
   methods: {
     addWidget (widgetType) {
       this.$store.commit('addWidget', {
-        chapterIndex: this.chapterIndex,
-        contentIndex: this.contentIndex,
+        chapterId: this.chapterId,
+        contentId: this.contentId,
         widgetType: widgetType
       })
     },
-    deleteWidget (index) {
+    deleteWidget (id) {
       this.$store.commit('deleteWidget', {
-        chapterIndex: this.chapterIndex,
-        contentIndex: this.contentIndex,
-        widgetIndex: index
+        chapterId: this.chapterId,
+        contentId: this.contentId,
+        widgetId: id
       })
     }
   }
