@@ -2,8 +2,7 @@
   <div class="widget-container" :style="{width: 90*size/3 + '%'}">
     <span @click="showSettings=!showSettings" class="material-icons justify-self-end settings">settings</span>
     <slot v-if="!showSettings" name="content" :showSettings="showSettings"></slot>
-    <widget-settings v-if="showSettings" v-on:delete="$emit('delete')"
-                     :size="size" @updateSize="$emit('updateSize', $event)">
+    <widget-settings ref="settings" v-if="showSettings" :size="size">
       <slot name="settings"></slot>
     </widget-settings>
   </div>

@@ -1,9 +1,9 @@
 <template>
-  <widget v-on:delete="$emit('delete')" :size="size" @updateSize="$emit('updateSize', $event)">
+  <widget-frame ref="widget" :size="size">
     <template v-slot:content="{ showSettings }">
       <iframe class="iframe__embed" v-show="value.url" :src="value.url"></iframe>
       <div v-if="!showSettings && value.url === ''" class="d-flex justify-content-center align-items-center" style="height: 300px">
-        Go to settings to enter embed url!
+        <span>Go to settings to enter embed url!</span>
       </div>
     </template>
     <template v-slot:settings>
@@ -14,14 +14,14 @@
         </div>
       </div>
     </template>
-  </widget>
+  </widget-frame>
 </template>
 
 <script>
-import Widget from './Widget'
+import WidgetFrame from './Widget'
 export default {
   name: 'IframeWidget',
-  components: { Widget },
+  components: { WidgetFrame },
   props: ['value', 'size']
 }
 </script>

@@ -1,25 +1,24 @@
 <template>
-  <widget v-on:delete="$emit('delete')" :size="size" @updateSize="$emit('updateSize', $event)">
+  <widget-frame :size="size">
     <template v-slot:content>
       <formatting-menu :editor="editor"></formatting-menu>
       <editor-content class="editor__content" :editor="editor"/>
     </template>
     <template v-slot:settings></template>
-  </widget>
+  </widget-frame>
 </template>
 
 <script>
 import { Editor, EditorContent } from 'tiptap'
 import {
-  Blockquote, BulletList, CodeBlock, Heading, ListItem, OrderedList, Bold, Code,
-  Italic, Link, Strike, Underline
+  Blockquote, BulletList, CodeBlock, Heading, ListItem, OrderedList, Bold, Code, Italic, Link, Strike, Underline
 } from 'tiptap-extensions'
 import FormattingMenu from '../FormattingMenu'
-import Widget from './Widget'
+import WidgetFrame from './Widget'
 
 export default {
   name: 'TextWidget',
-  components: { EditorContent, FormattingMenu, Widget },
+  components: { EditorContent, FormattingMenu, WidgetFrame },
   props: ['value', 'size'],
   data () {
     return {

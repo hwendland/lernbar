@@ -4,14 +4,14 @@
     <div class="row w-100">
       <div class="col">
           <label>How many columns should the widget occupy?
-            <select class="form-control" :value="size" @input="$emit('updateSize', $event.target.value)">
+            <select class="form-control" :value="size" @input="updateSize($event)">
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
             </select>
           </label>
         <div class="col pl-0">
-          <button @click.prevent="$emit('delete')" class="btn btn-danger delete">Delete</button>
+          <button @click.prevent="$parent.$parent.$emit('delete')" class="btn btn-danger delete">Delete</button>
         </div>
       </div>
     </div>
@@ -21,7 +21,12 @@
 <script>
 export default {
   name: 'WidgetSettings',
-  props: ['size']
+  props: ['size'],
+  methods: {
+    updateSize (event) {
+      this.$parent.$parent.$emit('updateSize', event.target.value)
+    }
+  }
 }
 </script>
 
