@@ -13,12 +13,6 @@ export default {
   name: 'App',
   components: {
     Navbar
-  },
-  created () {
-    const userId = localStorage.getItem('userId')
-    if (userId) {
-      this.$store.dispatch('getUserData', userId)
-    }
   }
 }
 </script>

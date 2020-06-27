@@ -29,77 +29,45 @@ export const UserStore = {
   },
   actions: {
     signUp: ({ dispatch }, userData) => {
-      axios.post('/users.json', userData).then(res => {
-        const id = res.data.name
-        dispatch('getUserData', id).then()
+      return new Promise((resolve) => {
+        axios.post('/users.json', userData).then(res => {
+          const id = res.data.name
+          dispatch('getUserData', id).then(() => resolve())
+        })
       })
     },
     signIn: ({ commit }, { email, password }) => {
-      axios.get('/users.json').then(res => {
-        const data = Object.entries(res.data)
-        const user = data.filter(([key, values]) => {
-          return values.email === email && values.password === password
-        })[0]
-        if (user) {
-          localStorage.setItem('userId', user[0])
-          commit('setUser', { id: user[0], name: user[1].name, email: user[1].email, role: user[1].role })
-        } else {
-          throw new Error('no match')
-        }
+      return new Promise((resolve, reject) => {
+        axios.get('/users.json').then(res => {
+          const data = Object.entries(res.data)
+          const user = data.filter(([key, values]) => {
+            return values.email === email && values.password === password
+          })[0]
+          if (user) {
+            localStorage.setItem('userId', user[0])
+            commit('setUser', { id: user[0], name: user[1].name, email: user[1].email, role: user[1].role })
+            resolve()
+          } else {
+            reject(Error('no match'))
+          }
+        })
       })
     },
     getUserData: ({ commit, state }, userId) => {
-      axios.get('/users/' + userId + '.json').then(res => {
-        const user = res.data
-        if (user) {
-          localStorage.setItem('userId', userId)
-          commit('setUser', { id: userId, name: user.name, email: user.email, role: user.role })
-        }
+      return new Promise((resolve, reject) => {
+        axios.get('/users/' + userId + '.json').then(res => {
+          const user = res.data
+          if (user) {
+            localStorage.setItem('userId', userId)
+            commit('setUser', { id: userId, name: user.name, email: user.email, role: user.role })
+            resolve()
+          } else { reject(Error('could not retrieve user')) }
+        })
       })
     },
     logout: ({ commit }) => {
       localStorage.removeItem('userId')
       commit('setUser', { id: null, name: '', email: '', role: '' })
     }
-  }
-}
-
-export const actions = {
-  signUp: ({ dispatch }, userData) => {
-    axios.post('/users.json', userData).then(res => {
-      const id = res.data.name
-      dispatch('getUserData', id).then()
-    })
-  },
-  signIn: ({ commit }, { email, password }) => {
-    axios.get('/users.json').then(res => {
-      const data = Object.entries(res.data)
-      const user = data.filter(([key, values]) => {
-        return values.email === email && values.password === password
-      })[0]
-      if (user) {
-        localStorage.setItem('userId', user[0])
-        commit('setUser', { id: user[0], name: user[1].name, email: user[1].email, role: user[1].role })
-      } else {
-        throw new Error('no match')
-      }
-    })
-  },
-  getUserData: ({ commit, state }, userId) => {
-    return new Promise((resolve, reject) => {
-      axios.get('/users/' + userId + '.json').then(res => {
-        const user = res.data
-        console.log('store got user', user)
-        if (user) {
-          localStorage.setItem('userId', userId)
-          commit('setUser', { id: userId, name: user.name, email: user.email, role: user.role })
-          resolve()
-        } else { reject(Error('could not retrieve user')) }
-      })
-    })
-  },
-  logout: ({ commit }) => {
-    localStorage.removeItem('userId')
-    commit('setUser', { id: null, name: '', email: '', role: '' })
   }
 }
