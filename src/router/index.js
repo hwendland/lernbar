@@ -16,7 +16,7 @@ const routes = [
     name: 'Author',
     component: () => import(/* webpackChunkName: "author" */ '../views/Author.vue'),
     beforeEnter: (to, from, next) => {
-      if (store.getters.canUserAccess('author')) { next() } else next(false)
+      if (store.getters.canUserAccess('author')) { next() } else next('/')
     }
   },
   {
@@ -24,7 +24,7 @@ const routes = [
     name: 'Trainer',
     component: () => import(/* webpackChunkName: "trainer" */ '../views/Trainer.vue'),
     beforeEnter: (to, from, next) => {
-      if (store.getters.canUserAccess('trainer')) { next() } else next(false)
+      if (store.getters.canUserAccess('trainer')) { next() } else next('/')
     }
   },
   {
@@ -59,7 +59,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "editor" */ '../views/Editor.vue'),
     props: true,
     beforeEnter: (to, from, next) => {
-      if (store.getters.canUserAccess('author')) { next() } else next(false)
+      if (store.getters.canUserAccess('author')) { next() } else next('/')
     }
   }
 ]
