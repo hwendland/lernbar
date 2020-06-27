@@ -72,7 +72,7 @@ export const EditorStore = {
     newChapter: ({ state, commit }) => {
       return new Promise(resolve => {
         commit('newChapter')
-        const newChapterId = state.course.courseStructure.getLastChapter()
+        const newChapterId = state.course.courseStructure.getLastChapter().id
         resolve(newChapterId)
       })
     },
