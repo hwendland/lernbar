@@ -70,4 +70,7 @@ export default {
   button {
     border-radius: 0;
   }
+  input {
+    border-radius: 0;
+  }
 </style>
