@@ -1,6 +1,6 @@
 <template>
   <div class="widget-container" :style="{width: 90*size/3 + '%'}">
-    <span @click="showSettings=!showSettings" class="material-icons justify-self-end settings">settings</span>
+    <span @click="showSettings=!showSettings" class="material-icons settings">settings</span>
     <slot v-if="!showSettings" name="content" :showSettings="showSettings"></slot>
     <widget-settings ref="settings" v-if="showSettings" :size="size">
       <slot name="settings"></slot>
@@ -33,6 +33,7 @@ export default {
     margin: 10px;
 
     .settings {
+      cursor: pointer;
     }
   }
 </style>
