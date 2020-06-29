@@ -38,4 +38,8 @@ export default {
   .search {
     border: none
   }
+  .form-control:focus {
+    box-shadow: none;
+    border: none
+  }
 </style>

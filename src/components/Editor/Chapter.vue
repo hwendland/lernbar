@@ -30,7 +30,7 @@
                   <h5 class="card-title">{{content.title}}</h5>
                 </div>
                 <div class="col justify-content-end d-flex text-secondary m-0 p-0" style="flex-grow: 0">
-                  <span :id="'delete_' + content.id" class="material-icons pr-2 delete" style="display: none"
+                  <span :id="'section_delete_' + content.id" class="material-icons pr-2 delete"
                         @click="deleteContent(content.id)">delete</span>
                 </div>
               </div>
@@ -55,10 +55,10 @@ export default {
   },
   methods: {
     showDelete (id, event) {
-      document.getElementById('delete' + '_' + id).style.display = 'inline-block'
+      document.getElementById('section_delete_' + id).style.display = 'inline-block'
     },
     hideDelete (id, event) {
-      document.getElementById('delete' + '_' + id).style.display = 'none'
+      document.getElementById('section_delete_' + id).style.display = 'none'
     },
     deleteContent (id) {
       this.$store.commit('deleteContent', { chapterId: this.chapterId, contentId: id })
@@ -87,5 +87,6 @@ export default {
   }
   .delete {
     transform: translate(0px, 0px);
+    display: none;
   }
 </style>

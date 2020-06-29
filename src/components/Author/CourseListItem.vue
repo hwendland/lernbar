@@ -44,5 +44,8 @@ export default {
     height: auto;
     max-width: 15vw
   }
-
+  .form-control:focus {
+    box-shadow: none;
+    border: none
+  }
 </style>
