@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-light bg-light navbar-expand sticky-top" :style="{height: '100px'}">
     <router-link tag="div" class="nav-link pr-0" to="/">
-      <img alt="lernbar Logo" class="logo" src="../../public/img/lernbarLogo.png"/>
+      <img alt="lernbar Logo" class="logo" src="../../public/img/logo.png"/>
     </router-link>
     <ul class="navbar-nav mr-auto d-flex align-items-center">
       <router-link tag="li" class="nav-item nav-link navbar-brand" to="/">lernbar</router-link>
