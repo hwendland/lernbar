@@ -19,32 +19,18 @@
 import draggable from 'vuedraggable'
 import TextWidget from './Widgets/Text'
 import IframeWidget from './Widgets/IFrame'
+import { widgetMethods } from '../../mixins/Editor/widgetMethods'
 
 export default {
   name: 'CourseSection',
   components: { TextWidget, IframeWidget, draggable },
   props: ['chapterId', 'contentId'],
+  mixins: [widgetMethods],
   computed: {
     section () {
       return this.$store.state.editor.course.getContent(this.chapterId, this.contentId)
     },
     widgets () { return this.section.widgets }
-  },
-  methods: {
-    addWidget (widgetType) {
-      this.$store.commit('addWidget', {
-        chapterId: this.chapterId,
-        contentId: this.contentId,
-        widgetType: widgetType
-      })
-    },
-    deleteWidget (id) {
-      this.$store.commit('deleteWidget', {
-        chapterId: this.chapterId,
-        contentId: this.contentId,
-        widgetId: id
-      })
-    }
   }
 }
 </script>
