@@ -1,11 +1,16 @@
 <template>
   <div class="col">
-    <div class="d-flex justify-content-end mb-5" style="flex-grow: 0">
-      <span @click="addWidget('text-widget')" class="material-icons">text_fields</span>
-      <span @click="addWidget('iframe-widget')" class="material-icons">insert_link</span>
-      <span class="material-icons">insert_photo</span>
-      <span class="material-icons">theaters</span>
-      <span class="material-icons">music_note</span>
+    <div class="row form-group justify-content-between">
+      <label class="label">Title
+        <input placeholder="Title" class="form-control form-control-lg title" v-model="section.title">
+      </label>
+      <div class="d-flex justify-content-end mb-5" style="flex-grow: 0">
+        <span @click="addWidget('text-widget')" class="material-icons">text_fields</span>
+        <span @click="addWidget('iframe-widget')" class="material-icons">insert_link</span>
+        <span class="material-icons">insert_photo</span>
+        <span class="material-icons">theaters</span>
+        <span class="material-icons">music_note</span>
+      </div>
     </div>
     <draggable :list="widgets" class="row">
       <component @delete="deleteWidget(widget.id)" v-model=widget.content
@@ -36,4 +41,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  .title {
+      margin-top: 5px;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid #ffc107
+    }
+  .label {
+    font-size: small;
+    color: darkgray;
+  }
 </style>

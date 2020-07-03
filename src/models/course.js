@@ -167,7 +167,7 @@ export class Course {
     let result
     try {
       result = this.getChapter(chapterId).getContent(contentId)
-    } finally {
+    } catch {
       const allContent = []
       this.courseStructure.chapters.forEach(
         chapter => allContent.push(...chapter.content)
